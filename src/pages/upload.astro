@@ -1,0 +1,136 @@
+---
+---
+
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <title>3D Upload – Silent Inbox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #0f0f0f;
+        color: white;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 60px auto;
+        padding: 20px;
+      }
+
+      h1 {
+        margin-bottom: 10px;
+      }
+
+      input, select, button {
+        width: 100%;
+        padding: 12px;
+        margin-top: 10px;
+        border-radius: 8px;
+        border: none;
+      }
+
+      input, select {
+        background: #1e1e1e;
+        color: white;
+      }
+
+      button {
+        background: #4f46e5;
+        color: white;
+        cursor: pointer;
+        margin-top: 20px;
+      }
+
+      button:hover {
+        background: #3730a3;
+      }
+
+      .note {
+        font-size: 13px;
+        opacity: 0.7;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>3D Datei hochladen</h1>
+      <p>Erhalte eine Offerte für deinen 3D Druck</p>
+
+      <form id="uploadForm">
+        <label>3D Datei (.stl, .obj, .3mf)</label>
+        <input type="file" id="file" required />
+
+        <label>Material</label>
+        <select id="material" required>
+          <option value="pla">PLA</option>
+          <option value="petg">PETG</option>
+          <option value="resin">Resin</option>
+        </select>
+
+        <label>Farbe</label>
+        <select id="color" required>
+          <option value="schwarz">Schwarz</option>
+          <option value="weiss">Weiss</option>
+          <option value="rot">Rot</option>
+          <option value="blau">Blau</option>
+        </select>
+
+        <label>Email</label>
+        <input type="email" id="email" required placeholder="deine@email.ch" />
+
+        <button type="submit">Offerte anfragen</button>
+      </form>
+
+      <p class="note">
+        Du erhältst eine Offerte per Email und in deinem Account.
+      </p>
+    </div>
+
+    <script>
+      const form = document.getElementById("uploadForm");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const file = document.getElementById("file").files[0];
+        const material = document.getElementById("material").value;
+        const color = document.getElementById("color").value;
+        const email = document.getElementById("email").value;
+
+        if (!file) {
+          alert("Bitte Datei auswählen");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("material", material);
+        formData.append("color", color);
+        formData.append("email", email);
+
+        try {
+          const res = await fetch("/api/upload", {
+            method: "POST",
+            body: formData
+          });
+
+          if (res.ok) {
+            alert("Offerte angefragt! Wir melden uns per Email.");
+            form.reset();
+          } else {
+            alert("Fehler beim Senden");
+          }
+        } catch (err) {
+          alert("Server Fehler");
+        }
+      });
+    </script>
+  </body>
+</html>
